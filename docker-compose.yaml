@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+    api:
+        build: .
+        container_name: api
+        ports:
+            - "8080:8080"
+        networks:
+            - product-network
+        depends_on:
+            - "mongo"
+    mongo:
+        image: mongo
+        container_name: mongo-star
+        environment:
+            MONGO_INITDB_ROOT: 
+            MONGO_INITDB_PASSWORD: 
+            MONGO_INITDB_DATABASE: star-wars
+               
+        networks:
+            - product-network
+
+networks:
+    product-network:
+        driver:  "bridge"
+
+
+  
+
