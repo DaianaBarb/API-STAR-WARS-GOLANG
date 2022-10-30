@@ -6,6 +6,7 @@ stages:
   - build
   - docker
   - homolog
+  - production
 
 variables:
   SERVICE_NAME: "api"
