@@ -1,0 +1,41 @@
+run:
+  deadline: 120s
+  skip-dirs:
+    - internal/router/mocks
+    - internal/service/mocks
+    - internal/provider/mongo/dao
+  skip-files:
+    - mock.go
+    - _test.go
+    - _var.go
+    - bean.go
+    - routes.go
+    - collection.go
+
+linters: 
+  disable-all: true
+  enable:
+    - gofmt
+    - goconst
+    - gocyclo
+    - goimports
+    - varcheck
+    - errcheck
+    - gosec
+    - unused
+         
+linters-settings:
+  goling: 
+    min-confidence: 0.9
+  lll:
+    line-length: 140
+  misspell:
+    ignore-words:
+      - americanas
+      - submarino
+      - shoptime
+      - soubarato
+  gocyclo:
+    min-complexity: 20
+
+    go: '1.18'

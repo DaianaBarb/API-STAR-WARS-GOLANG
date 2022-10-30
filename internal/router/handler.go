@@ -14,8 +14,8 @@ import (
 	"api-star-wars-golang/internal/service"
 	"time"
 
-	"github.com/go-playground/validator/v10"
-	_ "github.com/go-playground/validator/v10"
+	validator "github.com/go-playground/validator/v10"
+
 	"github.com/gorilla/mux"
 )
 
