@@ -1,0 +1,69 @@
+include:
+  - 'url-helm'
+
+stages:
+  - test
+  - build
+  - docker
+  - homolog
+
+variables:
+  SERVICE_NAME: "api"
+  VERSION: "1"
+
+unit-test:
+  image: golang:1.18
+  stage: test
+  script: go test -mod vendor -v -race ./...
+
+build-bin:
+  image: golang:1.18
+  stage: build
+  script:
+    - go build -mod vendor -o $SERVICE_NAME cmd/main.go
+    - mkdir -p $CI_PROJECT_DIR/dist
+    - mv $SERVICE_NAME $CI_PROJECT_DIR/dist
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - $CI_PROJECT_DIR/dist/$SERVICE_NAME
+
+push-image:
+  image: docker:19.03.1
+  stage: docker
+  script:
+    - cp Dockerfile ./dist
+    - cd dist
+    - docker build -t "api-star-wars-golang:$VERSION.$CI_PIPELINE_ID" .
+    - docker push "https://hub.docker.com/api-star-wars-golang:$VERSION.$CI_PIPELINE_ID"
+
+deploy-homolog:
+  extends: .helm_deploy
+  stage: homolog
+  when: manual
+  variables:
+    NAMESPACE: seu-nomespace
+    RELEASE: star-wars-v1-daiana-homolog
+    VERSION: $VERSION.$CI_PIPELINE_ID
+    TAG: $VERSION.$CI_PIPELINE_ID
+    USER: $SEU_USER_EMAIL
+    DESCRIPTION: 'Api star-wars em go'
+    K8S_CLUST_SERVER: $SEU_CLUST
+    K8S_USER_TOKEN: $SEU_TOKEN
+    CONFIGS: ./k8s/homolog.yml
+
+deploy-production:
+  extends: .helm_deploy
+  stage: homolog
+  when: manual
+  variables:
+    NAMESPACE: seu-nomespace
+    RELEASE: star-wars-v1-daiana-production
+    VERSION: $VERSION.$CI_PIPELINE_ID
+    TAG: $VERSION.$CI_PIPELINE_ID
+    USER: $SEU_USER_EMAIL
+    DESCRIPTION: 'Api star-wars em go'
+    K8S_CLUST_SERVER: $SEU_CLUST
+    K8S_USER_TOKEN: $SEU_TOKEN
+    CONFIGS: ./k8s/homolog.yml
+
